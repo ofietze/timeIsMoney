@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worth Your Time?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Worth your<br><span>time?</span></h1>
+    <p class="subtitle">Enter your take-home pay and find out how long you really work for that purchase.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- ── Salary ── -->
+    <h3>Your salary</h3>
+    <div class="field-group">
+      <label for="salary">Take-home amount</label>
+      <div class="salary-row">
+        <input type="number" id="salary" placeholder="45000" min="0" step="any">
+        <select id="currency">
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="JPY">¥ JPY</option>
+          <option value="CAD">$ CAD</option>
+          <option value="AUD">$ AUD</option>
+          <option value="CHF">₣ CHF</option>
+          <option value="CNY">¥ CNY</option>
+          <option value="INR">₹ INR</option>
+          <option value="BRL">R$ BRL</option>
+          <option value="MXN">$ MXN</option>
+          <option value="KRW">₩ KRW</option>
+          <option value="SEK">kr SEK</option>
+          <option value="NOK">kr NOK</option>
+          <option value="DKK">kr DKK</option>
+        </select>
+      </div>
+      <div class="period-row">
+        <button class="period-btn" data-period="hourly">Hourly</button>
+        <button class="period-btn" data-period="daily">Daily</button>
+        <button class="period-btn" data-period="weekly">Weekly</button>
+        <button class="period-btn active" data-period="monthly">Monthly</button>
+        <button class="period-btn" data-period="yearly">Yearly</button>
+      </div>
+      <p class="period-hint" id="period-hint">Assumes 160 working hours/month (40h/wk)</p>
+    </div>
+
+    <!-- ── Shopping ── -->
+    <h3>Go <i>shopping</i></h3>
+    <div class="field-group" style="margin-bottom: 0">
+      <label for="item-name">Item name &amp; price</label>
+      <div class="item-row">
+        <input type="text"   id="item-name" placeholder="Phone, vacation…">
+        <input type="number" id="price"     placeholder="1299" min="0" step="any">
+        <button class="add-btn" id="add-btn">+ Add</button>
+      </div>
+      <p class="error" id="error-msg">Enter a price and a valid salary first.</p>
+    </div>
+
+    <!-- ── Live preview ── -->
+    <div class="live-result" id="live-result">
+      <div class="lr-label"><em id="lr-name">—</em> costs you</div>
+      <div class="lr-time" id="lr-time">—</div>
+    </div>
+
+    <!-- ── Receipt ── -->
+    <div class="receipt-section" id="receipt-section">
+      <div class="receipt">
+        <div class="receipt-header">
+          <span class="receipt-header-label">Your total is</span>
+          <span class="receipt-item-count" id="item-count"></span>
+        </div>
+        <div class="receipt-items" id="receipt-items"></div>
+        <div class="receipt-total">
+          <span class="receipt-total-label">Total time</span>
+          <div class="receipt-total-time" id="receipt-total-time">—</div>
+        </div>
+        <div class="receipt-breakdown" id="receipt-breakdown"></div>
+      </div>
+      <button class="clear-btn" id="clear-btn">Clear all items</button>
+    </div>
+
+  </div><!-- /.card -->
+</div><!-- /.container -->
+
+<script src="app.js"></script>
+</body>
+</html>
