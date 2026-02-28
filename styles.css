@@ -6,7 +6,7 @@
   --accent-dim: rgba(255, 140, 66, 0.1);
   --text: #f0ede6;
   --secondary: #b0aca4;
-  --muted: #b0aca4;
+  --muted: #717171;
   --input-bg: #1e1e1e;
   --danger: #e05555;
 }
@@ -63,17 +63,6 @@ h1 {
 }
 
 h1 span {
-  color: var(--accent);
-  font-style: italic;
-}
-
-h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-  color: var(--text);
-}
-
-h3 span {
   color: var(--accent);
   font-style: italic;
 }
@@ -151,6 +140,7 @@ input:focus {
 }
 
 .salary-row input {
+  border-right: none;
   flex: 1;
   min-width: 0;
 }
@@ -188,6 +178,7 @@ select:focus {
   flex: 1;
   background: var(--input-bg);
   border: 1px solid var(--border);
+  border-right: none;
   color: var(--muted);
   font-family: 'DM Mono', monospace;
   font-size: 0.68rem;
@@ -223,6 +214,7 @@ select:focus {
 
 .item-row input[type="text"] {
   flex: 1;
+  border-right: none;
   font-size: 1.1rem;
   min-width: 0;
 }
@@ -230,6 +222,7 @@ select:focus {
 .item-row input[type="number"] {
   width: 130px;
   flex-shrink: 0;
+  border-right: none;
   font-size: 1.4rem;
 }
 
@@ -440,6 +433,29 @@ select:focus {
 .clear-btn:hover {
   border-color: var(--danger);
   color: var(--danger);
+}
+
+/* ── Hours per week ── */
+
+.hours-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  gap: 1rem;
+}
+
+.hours-row label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.hours-row input {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  padding: 0.4rem 0.75rem;
+  text-align: right;
 }
 
 /* ── Animations ── */

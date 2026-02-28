@@ -5,6 +5,7 @@ const itemInput      = document.getElementById('item-name');
 const addBtn         = document.getElementById('add-btn');
 const errorMsg       = document.getElementById('error-msg');
 const periodHint     = document.getElementById('period-hint');
+const hoursPerWeekInput = document.getElementById('hours-per-week');
 const liveResult     = document.getElementById('live-result');
 const lrName         = document.getElementById('lr-name');
 const lrTime         = document.getElementById('lr-time');
@@ -17,26 +18,41 @@ const clearBtn       = document.getElementById('clear-btn');
 
 // ── Constants ──────────────────────────────────────────────
 
-const HINTS = {
-  hourly:  'Using your exact hourly rate',
-  daily:   'Assumes 8 working hours/day',
-  weekly:  'Assumes 40 working hours/week',
-  monthly: 'Assumes 160 working hours/month (40h/wk)',
-  yearly:  'Assumes 2,080 working hours/year (52 × 40h)',
-};
+const DEFAULT_HOURS_PER_WEEK = 40;
 
-const HOURS_PER_PERIOD = {
-  hourly: 1,
-  daily: 8,
-  weekly: 40,
-  monthly: 160,
-  yearly: 2080,
-};
+function getHoursPerWeek() {
+  const v = parseFloat(hoursPerWeekInput.value);
+  return v && v > 0 ? v : DEFAULT_HOURS_PER_WEEK;
+}
 
-// Working-time unit sizes in seconds
-const MO_S = 3600 * 160;
-const WK_S = 3600 * 40;
-const D_S  = 3600 * 8;
+// Derive all period multipliers from the current weekly hours setting
+function getHoursPerPeriod() {
+  const w = getHoursPerWeek();
+  return {
+    hourly:  1,
+    daily:   w / 5,
+    weekly:  w,
+    monthly: w * 52 / 12,
+    yearly:  w * 52,
+  };
+}
+
+function buildHints() {
+  const w  = getHoursPerWeek();
+  const mo = (w * 52 / 12).toFixed(1);
+  const yr = (w * 52).toLocaleString();
+  return {
+    hourly:  'Using your exact hourly rate',
+    daily:   `Assumes ${(w / 5).toFixed(1)} working hours/day`,
+    weekly:  `Assumes ${w} working hours/week`,
+    monthly: `Assumes ${mo} working hours/month (${w}h/wk)`,
+    yearly:  `Assumes ${yr} working hours/year (${w}h/wk)`,
+  };
+}
+
+function updatePeriodHint() {
+  periodHint.textContent = buildHints()[currentPeriod];
+}
 
 // ── State ──────────────────────────────────────────────────
 
@@ -47,17 +63,22 @@ let cart = [];
 
 function getHourlyRate() {
   const s = parseFloat(salaryInput.value);
-  return s && s > 0 ? s / HOURS_PER_PERIOD[currentPeriod] : null;
+  return s && s > 0 ? s / getHoursPerPeriod()[currentPeriod] : null;
 }
 
 /**
  * Converts a total number of seconds into a human-friendly
  * working-time string, e.g. "1mo 2wk 3d 4h 5m 6s".
- * Uses working units: month = 160h, week = 40h, day = 8h.
+ * Uses working units derived from the current hours-per-week setting.
  */
 function formatTime(totalSeconds) {
   totalSeconds = Math.round(totalSeconds);
   if (totalSeconds <= 0) return '0s';
+
+  const w    = getHoursPerWeek();
+  const WK_S = 3600 * w;
+  const D_S  = 3600 * (w / 5);
+  const MO_S = WK_S * 52 / 12;
 
   const mo = Math.floor(totalSeconds / MO_S);
   let rem   = totalSeconds % MO_S;
@@ -102,7 +123,7 @@ function updateLivePreview() {
 
   const hours = price / rate;
   const name  = itemInput.value.trim() || 'this item';
-  lrName.textContent = `${name}`;
+  lrName.textContent = `"${name}"`;
   lrTime.textContent = formatTime(hours * 3600);
   liveResult.classList.add('visible');
 }
@@ -137,10 +158,11 @@ function renderReceipt() {
   receiptTotalEl.textContent = formatTime(totalHours * 3600);
   itemCountEl.textContent    = `${cart.length} item${cart.length !== 1 ? 's' : ''}`;
 
+  const w       = getHoursPerWeek();
   const totalH  = totalHours.toFixed(1);
-  const totalD  = (totalHours / 8).toFixed(1);
-  const totalWk = (totalHours / 40).toFixed(2);
-  const totalMo = (totalHours / 160).toFixed(2);
+  const totalD  = (totalHours / (w / 5)).toFixed(1);
+  const totalWk = (totalHours / w).toFixed(2);
+  const totalMo = (totalHours / (w * 52 / 12)).toFixed(2);
 
   receiptBreak.innerHTML =
     `<span>${totalH}</span> hrs &nbsp;·&nbsp; ` +
@@ -192,7 +214,7 @@ document.querySelectorAll('.period-btn').forEach(btn => {
     document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentPeriod = btn.dataset.period;
-    periodHint.textContent = HINTS[currentPeriod];
+    updatePeriodHint();
     updateLivePreview();
     renderReceipt();
   });
@@ -208,6 +230,13 @@ clearBtn.addEventListener('click', () => { cart = []; renderReceipt(); });
   el.addEventListener('input', updateLivePreview)
 );
 
-// Receipt recalculates when salary or currency changes
+// Receipt recalculates when salary, currency, or hours/week changes
 salaryInput.addEventListener('input', renderReceipt);
 currencySelect.addEventListener('change', renderReceipt);
+
+// Hours-per-week affects hints, live preview, and receipt
+hoursPerWeekInput.addEventListener('input', () => {
+  updatePeriodHint();
+  updateLivePreview();
+  renderReceipt();
+});
